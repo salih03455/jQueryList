@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="css/style.css">
+	<script type="text/javascript" src="js/jquery.js"></script>
+	<script src="https://use.fontawesome.com/3cc7c08043.js"></script>
+</head>
+<body>
+	<div class="container">
+		<div class="a"></div>
+		<input type="text" placeholder="Metin girin ve entera tıklayın..." class="inp">
+		<div class="warning"></div>
+	</div>
+</body>
+<script type="text/javascript">
+	var values = [];
+
+	$(".container").on( "keyup", ".inp", function(event){
+		if(event.keyCode == 13){
+			var value = $.trim($(this).val());
+			if(value == ""){
+				$(".warning").text("Lütfen boş bırakmayınız!");
+			}
+			else{
+				var a = $(".a");
+				cnt = "<div class='b'><span>"+ value +"</span><a class='remove' href='javascript:void(0)'><i class='fa fa-trash-o fa-2x'></i></a><a class='edit' href='javascript:void(0)'><i class='fa fa-pencil fa-2x'></i></a></div>";
+				a.append(cnt);
+				$(".b").slideDown(300);
+				$(".warning").text("");
+				values.push(value);
+				$(this).val("");
+				loopFunc();
+			}
+		}
+	});
+	
+	$(".container").on( "keyup", ".inp-edit", function(event){
+		if(event.keyCode == 13){
+			var value = $.trim($(this).val());
+			if(value == ""){
+				$(".warning").text("Lütfen boş bırakmayınız!");
+			}
+			else{
+				var id = $(this).attr("id");
+				$(".b").each(function(){
+					var index = $(this).index();
+					if (id == index){
+						$(this).removeClass("editBg");
+						$("span", this).text(value);
+						values.splice(id, 1, value);
+					}
+				});
+				$(".warning").text("");
+				$(this).val("");
+				$(".container input").attr("class", "inp");
+			}
+		}
+	});
+	
+	$(".container").on("click", ".remove", function(){
+		var editMode = $(".container input").hasClass("inp-edit");
+		if(editMode == true){
+			$(".warning").text("Düzenleme yaparken silemezsiniz!");
+			$(".container input").focus();
+		}
+		else{
+			var id = $(this).parent().attr("id");
+			$(".b").each(function(){
+				var index = $(this).index();
+				if (id == index){
+					values.splice(id, 1);
+					$(this).slideUp(300, rmv);
+					function rmv(){
+						$(this).remove();
+						loopFunc();
+					}
+					return false;
+				}
+			});
+		}
+	});
+	
+	$(".container").on("click", ".edit", function(){
+		$(".b").removeClass("editBg");
+		$(this).parent().addClass("editBg");
+		var id = $(this).parent().attr("id");
+		var value = $(this).siblings("span").text();
+		$(".container input").val(value);
+		$(".container input").focus();
+		$(".container input").attr("class", "inp-edit");
+		$(".container input").attr("id", id);
+	});
+	
+	function loopFunc(){
+		$(".b").each(function(){
+			var index = $(this).index();
+			$(this).attr("id", index);
+		});
+	}
+</script>
+</html>
